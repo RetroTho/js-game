@@ -4,15 +4,16 @@ export class Player{
     constructor(){
         this.playerColor = [255, 255, 255];
         this.playerPos = new Map();
+        this.playerSize = 12
 
         this.generatePlayer();        
         this.updatePlayer();
     }
 
     generatePlayer() {
-        for (let i = 0; i < 5; i++){
-            for (let j = 0; j < 5; j++) {
-                this.playerPos.set(i * 5 + j, [30 + i, 30 + j]);
+        for (let i = 0; i < this.playerSize; i++){
+            for (let j = 0; j < this.playerSize; j++) {
+                this.playerPos.set(i * this.playerSize + j, [48 + i, 48 + j]);
             }
         }
     }
@@ -34,9 +35,9 @@ export class Player{
         for (let i = 0; i < this.playerPos.size; i++) {
             let currX = this.playerPos.get(i)[0]
             let currY = this.playerPos.get(i)[1]
-            if (currY - 5 >= 0 && grid.pixels[(currY - 5) * grid.width + currX].solid == false) {
+            if (currY - this.playerSize >= 0 && grid.pixels[(currY - this.playerSize) * grid.width + currX].solid == false) {
                 grid.topLayerPixels[currY * grid.width + currX].value = ' ';
-                this.playerPos.set(i, [currX, currY - 5]);
+                this.playerPos.set(i, [currX, currY - this.playerSize]);
             }
         }
         this.updatePlayer();
@@ -46,9 +47,9 @@ export class Player{
         for (let i = 0; i < this.playerPos.size; i++) {
             let currX = this.playerPos.get(i)[0]
             let currY = this.playerPos.get(i)[1]
-            if (currY + 5 <= grid.height - 1 && grid.pixels[(currY + 5) * grid.width + currX].solid == false) {
+            if (currY + this.playerSize <= grid.height - 1 && grid.pixels[(currY + this.playerSize) * grid.width + currX].solid == false) {
                 grid.topLayerPixels[currY * grid.width + currX].value = ' ';
-                this.playerPos.set(i, [currX, currY + 5]);
+                this.playerPos.set(i, [currX, currY + this.playerSize]);
             }
         }
         this.updatePlayer();
@@ -58,9 +59,9 @@ export class Player{
         for (let i = 0; i < this.playerPos.size; i++) {
             let currX = this.playerPos.get(i)[0]
             let currY = this.playerPos.get(i)[1]
-            if (currX - 5 >= 0 && grid.pixels[currY * grid.width + (currX - 5)].solid == false) {
+            if (currX - this.playerSize >= 0 && grid.pixels[currY * grid.width + (currX - this.playerSize)].solid == false) {
                 grid.topLayerPixels[currY * grid.width + currX].value = ' ';
-                this.playerPos.set(i, [currX - 5, currY]);
+                this.playerPos.set(i, [currX - this.playerSize, currY]);
             }
         }
         this.updatePlayer();
@@ -70,9 +71,9 @@ export class Player{
         for (let i = 0; i < this.playerPos.size; i++) {
             let currX = this.playerPos.get(i)[0]
             let currY = this.playerPos.get(i)[1]
-            if (currX + 5 <= grid.width - 1 && grid.pixels[currY * grid.width + (currX + 5)].solid == false) {
+            if (currX + this.playerSize <= grid.width - 1 && grid.pixels[currY * grid.width + (currX + this.playerSize)].solid == false) {
                 grid.topLayerPixels[currY * grid.width + currX].value = ' ';
-                this.playerPos.set(i, [currX + 5, currY]);
+                this.playerPos.set(i, [currX + this.playerSize, currY]);
             }
         }
         this.updatePlayer();
