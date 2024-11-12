@@ -1,17 +1,14 @@
 import { addKey, removeKey, updateGame } from './keyhandler.js';
 import { Grid } from './screen.js';
 import { Player } from './player.js';
+import { rectangle } from './objects.js';
 
-// Create a new grid with 252x252 pixels and draw it
-export let grid = new Grid(252, 252, 2);
+// Create a new grid with 21x21 tiles and draw it
+export let grid = new Grid(21, 21, 2);
 grid.draw();
 
-// Change the data of a specific pixel
-for (let i = 12; i < 48; i++) {
-    for (let j = 24; j < 36; j++) {
-        grid.changePixelByCoords(i, j, 0, 255, 0, true);
-    }
-}
+// Create rectangle
+rectangle(4, 4, 3, 3)
 
 // Create player
 export let player = new Player();
@@ -27,4 +24,3 @@ window.addEventListener('keydown', function (event) {
 window.addEventListener('keyup', function (event) {
     removeKey(event.key);
 })
-

@@ -1,3 +1,5 @@
+import { SCREEN } from './consts.js';
+
 let gridCanvas = document.getElementById('grid-canvas');
 let ctx = gridCanvas.getContext('2d');
 
@@ -5,8 +7,44 @@ export class Pixel {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.value = 'rgb(0, 0, 0)';
+        this.color = [0, 0, 0];
+    }
+
+    setColor(r, g, b) {
+        this.color = [r, g, b];
+    }
+}
+
+class Tile {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = SCREEN.TILE_SIZE;
         this.solid = false;
+        this.pixels = [];
+
+        this.fillTile();
+    }
+
+    fillTile() {
+        for (let i = 0; i < this.size; i++) {
+            this.pixels.push([]);
+            for (let j = 0; j < this.size; j++) {
+                this.pixels[i].push(new Pixel(i, j));
+            }
+        }
+    }
+
+    setColor(r, g, b) {
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                this.pixels[i][j].setColor(r, g, b);
+            }
+        }
+    }
+
+    setSolid(solid) {
+        this.solid = solid;
     }
 }
 
@@ -15,91 +53,98 @@ export class Grid {
         this.width = width;
         this.height = height;
         this.pixelSize = pixelSize;
-        this.pixels = [];
-        this.topLayerPixels = [];
+        this.tilesBottom = [];
+        this.tilesTop = [];
+
+        ctx.canvas.width = this.width * SCREEN.TILE_SIZE * pixelSize;
+        ctx.canvas.height = this.height * SCREEN.TILE_SIZE * pixelSize;
 
         this.generateBottomLayer();
         this.generateTopLayer();
     }
 
     generateBottomLayer() {
-        for (let y = 0; y < this.height; y++) {
-            for (let x = 0; x < this.width; x++) {
-                let r = Math.random() * 0;
-                let g = Math.random() * 0;
-                let b = Math.random() * 0;
-
-                this.pixels.push(new Pixel(x, y));
-                this.pixels[y * this.width + x].value = `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+        for (let i = 0; i < this.width; i++) {
+            this.tilesBottom.push([]);
+            for (let j = 0; j < this.height; j++) {
+                this.tilesBottom[i].push(new Tile(i, j));
             }
         }
     }
 
     generateTopLayer() {
-        for (let y = 0; y < this.height; y++) {
-            for (let x = 0; x < this.width; x++) {
-                this.topLayerPixels.push(new Pixel(x, y));
-                this.topLayerPixels[y * this.width + x].value = ' ';
+        for (let i = 0; i < this.width; i++) {
+            this.tilesTop.push([]);
+            for (let j = 0; j < this.height; j++) {
+                this.tilesTop[i].push(new Tile(i, j));
             }
         }
     }
 
-    changePixelByCoords(x, y, r, g, b, solid=false) {
-        if (this.pixels[y * this.width + x]) { 
-            let newValue = `rgb(${r}, ${g}, ${b})`;
-            this.pixels[y * this.width + x].value = newValue;
-            this.pixels[y * this.width + x].solid = solid;
 
-            // Draw the updated color on the screen
-            ctx.fillStyle = newValue;
-            ctx.fillRect(x * this.pixelSize, y * this.pixelSize, this.pixelSize, this.pixelSize);
+    setTileColor(x, y, r, g, b, top=false) {
+        let tile = this.getTile(x, y, top);
+        tile.setColor(r, g, b);
+
+        this.draw();
+    }
+
+    setTileSolid(x, y, solid, top=false) {
+        let tile = this.getTile(x, y, top);
+        tile.setSolid(solid);
+    }
+
+    getTile(x, y, top=false) {
+        if (top) {
+            return this.tilesTop[x][y];
         } else {
-            // Handle the case when pixel is not found
-            console.log(`No pixel at coordinates (${x}, ${y}) found`);
+            return this.tilesBottom[x][y];
         }
     }
 
-    drawBottomLayer() {
+    clearScreen() {
         ctx.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
+    }
+
+    drawTile(x, y, r, g, b) {
+        ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+
+        // Draw the pixel at its position on the canvas
+        ctx.fillRect(x * this.pixelSize * SCREEN.TILE_SIZE, y * this.pixelSize * SCREEN.TILE_SIZE, this.pixelSize * SCREEN.TILE_SIZE, this.pixelSize * SCREEN.TILE_SIZE);
+    }
+
+    drawBottomLayer() {
+        this.clearScreen();
 
         // Draw bottom layer
-        for (let y = 0; y < this.height; y++) {
-            for (let x = 0; x < this.width; x++) {
-                let pixelValue = this.pixels[y * this.width + x].value;
+        for (let i = 0; i < this.width; i++) {
+            for (let j = 0; j < this.height; j++) {
+                let tile = this.tilesBottom[i][j];
+                let color = tile.pixels[0][0].color;
+                let r = color[0];
+                let g = color[1];
+                let b = color[2];
 
-                if (pixelValue.startsWith('rgb')) {
-                    let match = pixelValue.match(/(\d+),\s*(\d+),\s*(\d+)/);
-                    let r = parseInt(match[1]);
-                    let g = parseInt(match[2]);
-                    let b = parseInt(match[3]);
-
-                    ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-                }
-
-                // Draw the pixel at its position on the canvas
-                ctx.fillRect(x * this.pixelSize, y * this.pixelSize, this.pixelSize, this.pixelSize);
+                this.drawTile(i, j, r, g, b);
             }
         }
     }
 
     drawTopLayer() {
+        this.clearScreen();
+
         // Draw top layer
-        for (let y = 0; y < this.height; y++) {
-            for (let x = 0; x < this.width; x++) {
-                let pixelValue = this.topLayerPixels[y * this.width + x].value;
+        for (let i = 0; i < this.width; i++) {
+            for (let j = 0; j < this.height; j++) {
+                let tile = this.tilesTop[i][j];
+                let color = tile.pixels[0][0].color;
+                let r = color[0];
+                let g = color[1];
+                let b = color[2];
 
-                if (pixelValue.startsWith('rgb')) {
-                    let match = pixelValue.match(/(\d+),\s*(\d+),\s*(\d+)/);
-                    let r = parseInt(match[1]);
-                    let g = parseInt(match[2]);
-                    let b = parseInt(match[3]);
-
-                    ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-                    ctx.fillRect(x * this.pixelSize, y * this.pixelSize, this.pixelSize, this.pixelSize);
-                }
+                this.drawTile(i, j, r, g, b);
             }
         }
-
     }
 
     draw() {
