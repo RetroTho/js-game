@@ -21,6 +21,7 @@ class Tile {
         this.y = y;
         this.size = SCREEN.TILE_SIZE;
         this.solid = false;
+        this.visible = true;
         this.pixels = [];
 
         this.fillTile();
@@ -45,6 +46,10 @@ class Tile {
 
     setSolid(solid) {
         this.solid = solid;
+    }
+
+    setVisible(visible) {
+        this.visible = visible;
     }
 }
 
@@ -77,11 +82,12 @@ export class Grid {
         for (let i = 0; i < this.width; i++) {
             this.tilesTop.push([]);
             for (let j = 0; j < this.height; j++) {
-                this.tilesTop[i].push(new Tile(i, j));
+                let tile = new Tile(i, j);
+                tile.setVisible(false);
+                this.tilesTop[i].push(tile);
             }
         }
     }
-
 
     setTileColor(x, y, r, g, b, top=false) {
         let tile = this.getTile(x, y, top);
@@ -93,6 +99,11 @@ export class Grid {
     setTileSolid(x, y, solid, top=false) {
         let tile = this.getTile(x, y, top);
         tile.setSolid(solid);
+    }
+
+    setTileVisible(x, y, visible, top=false) {
+        let tile = this.getTile(x, y, top);
+        tile.setVisible(visible);
     }
 
     getTile(x, y, top=false) {
@@ -132,8 +143,6 @@ export class Grid {
     }
 
     drawTopLayer() {
-        this.clearScreen();
-
         // Draw top layer
         for (let i = 0; i < this.width; i++) {
             for (let j = 0; j < this.height; j++) {
@@ -143,7 +152,9 @@ export class Grid {
                 let g = color[1];
                 let b = color[2];
 
-                this.drawTile(i, j, r, g, b);
+                if (tile.visible) {
+                    this.drawTile(i, j, r, g, b);
+                }
             }
         }
     }
