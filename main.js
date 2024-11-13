@@ -4,7 +4,7 @@ import { Player } from './player.js';
 import { rectangle } from './objects.js';
 
 // Create a new grid with 21x21 tiles and draw it
-export let grid = new Grid(21, 21, 2);
+export let grid = new Grid(21, 21);
 grid.draw();
 
 // Create rectangle

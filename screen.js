@@ -49,15 +49,16 @@ class Tile {
 }
 
 export class Grid {
-    constructor(width, height, pixelSize=10) {
+    constructor(width, height) {
         this.width = width;
         this.height = height;
-        this.pixelSize = pixelSize;
+        this.pixelSize = SCREEN.PIXEL_SIZE;
+        this.tileSize = SCREEN.TILE_SIZE;
         this.tilesBottom = [];
         this.tilesTop = [];
 
-        ctx.canvas.width = this.width * SCREEN.TILE_SIZE * pixelSize;
-        ctx.canvas.height = this.height * SCREEN.TILE_SIZE * pixelSize;
+        ctx.canvas.width = this.width * this.tileSize * this.pixelSize;
+        ctx.canvas.height = this.height * this.tileSize * this.pixelSize;
 
         this.generateBottomLayer();
         this.generateTopLayer();
@@ -110,7 +111,7 @@ export class Grid {
         ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
 
         // Draw the pixel at its position on the canvas
-        ctx.fillRect(x * this.pixelSize * SCREEN.TILE_SIZE, y * this.pixelSize * SCREEN.TILE_SIZE, this.pixelSize * SCREEN.TILE_SIZE, this.pixelSize * SCREEN.TILE_SIZE);
+        ctx.fillRect(x * this.pixelSize * this.tileSize, y * this.pixelSize * this.tileSize, this.pixelSize * this.tileSize, this.pixelSize * this.tileSize);
     }
 
     drawBottomLayer() {

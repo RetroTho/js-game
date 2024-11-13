@@ -1,4 +1,5 @@
 export const SCREEN = {
+    PIXEL_SIZE: 2,
     TILE_SIZE: 12,
 }
 
