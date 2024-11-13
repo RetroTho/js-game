@@ -1,9 +1,5 @@
+import { KEYS } from './consts.js';
 import { player } from './main.js';
-
-const UP_KEY = 'w'
-const DOWN_KEY = 's'
-const LEFT_KEY = 'a'
-const RIGHT_KEY = 'd'
 
 var kbKeys = [];
 
@@ -16,8 +12,8 @@ export function removeKey(val) {
 }
 
 export function updateGame() {
-  if (kbKeys.includes(UP_KEY)) {player.moveUp();}
-  if (kbKeys.includes(DOWN_KEY)) {player.moveDown();}
-  if (kbKeys.includes(LEFT_KEY)) {player.moveLeft();}
-  if (kbKeys.includes(RIGHT_KEY)) {player.moveRight();}
+  if (kbKeys.includes(KEYS.UP_KEY)) {player.moveUp();}
+  if (kbKeys.includes(KEYS.DOWN_KEY)) {player.moveDown();}
+  if (kbKeys.includes(KEYS.LEFT_KEY)) {player.moveLeft();}
+  if (kbKeys.includes(KEYS.RIGHT_KEY)) {player.moveRight();}
 }
